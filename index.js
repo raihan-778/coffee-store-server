@@ -14,11 +14,7 @@ app.use(express.json());
 // userName:coffee-maker-server
 //  pass: bEvtjGdLBvHs4naN;
 
-// const uri =
-//   "mongodb+srv://coffee-maker-server:bEvtjGdLBvHs4naN@cluster0.wlin7fq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const uri =
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wlin7fq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
-  
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wlin7fq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -31,14 +27,16 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-
     //insert into db
-   const coffeeDB=client.db('coffeeStoreDB')
-   const addCoffee=coffeeDB.collection('addCoffee')
+    const coffeeDB = client.db("coffeeStoreDB");
+    const addCoffee = coffeeDB.collection("addCoffee");
 
-//  DB_USER=coffee-maker-server
-//   DB_PASS=bEvtjGdLBvHs4naN
-
+    app.post("/api/v1/addCoffee", async (req, res) => {
+      const newCoffee = req.body;
+      console.log(newCoffee);
+      const result = await addCoffee.insertOne(newCoffee);
+      res.send(result);
+    });
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
@@ -47,8 +45,6 @@ async function run() {
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
-
-
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
